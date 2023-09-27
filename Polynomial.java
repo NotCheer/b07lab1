@@ -2,36 +2,52 @@ import java.lang.Math;
 
 public class Polynomial{
   double[] coefficients;
+	int[] exponents;
 
   public Polynomial(){
   }
 
-  public Polynomial(double[] c){
+  public Polynomial(double[] c, int[] e){
     coefficients = c;
+		exponents = e;
   }
 
   public Polynomial add(Polynomial p){
     if (this == null) return null;
-    int t = p.coefficients.length;
-    int k;
-    double sum[];
-    if(t>this.coefficients.length) 
-    {
-      k=t;
-      t=this.coefficients.length;
-      sum = p.coefficients;
-    }
-    else 
-    {
-      k = this.coefficients.length;
-      sum = this.coefficients;
-    }
+    int pLength = p.coefficients.length;
+    int thisLength = this.coefficients.length;
+		k = max(pLength, thisLength);
+		double newPoly[k];
+		int newExpo[k];
 
-    for(int i=0; i<t; i++){
-      sum[i]=this.coefficients[i]+p.coefficients[i];
-    }
+		int i=0, j=0, index=0;
+    while(i<thisLength || j<pLength){
+    	if(i<thisLength && j<pLength && this.exponents[i]==p.exponents[j])
+			{
+				newExpo[index]=this.exponents[i];
+				newPoly[index]=this.coefficients[i]+p.coefficients[j];
+				index++;
+				i++;
+				j++;
+			}
+			else if(j=pLength || this.exponents[i]<p.exponents[j])
+			{
+				newExpo[index]=this.exponents[i];
+				newPoly[index]=this.coefficients[i];
+				index++;
+				i++;
+			}
+			else
+			{
+				newExpo[index]=p.exponents[j];
+				newPoly[index]=p.coefficients[j];
+				index++;
+				j++;
+			}
+		}
+		
 
-    Polynomial re = new Polynomial(sum);
+    Polynomial re = new Polynomial(newPoly[index], newExpo[index]);
     return re;
   }
   
@@ -40,7 +56,7 @@ public class Polynomial{
     double result=0;
     for(int i=0; i<this.coefficients.length; i++)
     {
-      result+=this.coefficients[i] * Math.pow(a,i);
+      result+=this.coefficients[i] * Math.pow(a,this.exponents[i]);
     }
     return result;
   }
@@ -48,12 +64,25 @@ public class Polynomial{
   public boolean hasRoot(double root)
   {
     if (this==null) return false;
-    double sum = 0;
-    for(int i=0; i<this.coefficients.length; i++)
-    {
-      sum += Math.pow(root, i)*this.coefficients[i];
-    }
-    if (sum == 0) return true;
+    if (this.evaluate(root)==0) return true;
     else return false;
   }
+
+	public Polynomial multiply(Polynomial p)
+	{
+		int pLength = p.exponents.length;
+		int thisLength = this.exponents.length;
+		int maxLength = p.exponents[pLength-1]*this.exponents[thisLength-1];
+		int i=0, j=0, index=0;
+		int newExpo[] = new int[maxLength];
+		double newPoly[] = new double[maxLength];
+		while(i<thisLength || j<pLength)
+		{
+			if(this.exponents[i]=p.exponents[j])
+			{
+				newPoly[this.exponents[i]*p.exponents[j]]=this.coefficients[i]*p.coefficients[j];
+				i++;
+				j++;
+			}	
+		}	
 }
