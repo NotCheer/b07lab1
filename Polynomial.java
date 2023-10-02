@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Scanner;
+import java.text.DecimalFormat;
 
 public class Polynomial{
   double[] coefficients;
@@ -22,39 +23,39 @@ public class Polynomial{
     Scanner s = new Scanner(file);
     String line = s.nextLine();
     
-    int i=1, index=0, pin=0;
+    int i=2, index=0, pin=0;
 
     String[] tmp = new String[2];
     String elements[] = line.split("[+-]+");
-    double[] coef = new double[elements.length];
-    int[] expo = new int[elements.length];
+    double[] coef = new double[elements.length-1];
+    int[] expo = new int[elements.length-1];
     boolean flag = true;
-    for(int n=0; n<elements[0].length(); n++)
+    for(int n=0; n<elements[1].length(); n++)
     {
-      if(elements[0].substring(n,n+1)=="x")
+      if(elements[1].substring(n,n+1).equals("x"))
       {
         flag = false;
-        i=0;
+        i=1;
         break;
       }
     }
     if(flag)
     {
-      coef[0]=Double.parseDouble(elements[0]);
-      if(line.substring(0,1)=="-")
+      coef[0]=Double.parseDouble(elements[1]);
+      if(line.substring(0,1).equals("-"))
       {
         coef[0]*=-1;
         pin++;
       }
-      pin+=elements[0].length();
+      pin+=elements[1].length();
       expo[0]=0;
     }
     for(i=i; i<elements.length; i++)
     {
       tmp=elements[i].split("x");
-      coef[i]=Double.parseDouble(tmp[0]);
-      if(line.substring(pin,pin+1)=="-") coef[i]*=-1;
-      expo[i]=Integer.parseInt(tmp[1]);
+      coef[i-1]=Double.parseDouble(tmp[0]);
+      if(pin+1<=line.length()&&(line.substring(pin,pin+1)).equals("-")) coef[i-1]*=-1;
+      expo[i-1]=Integer.parseInt(tmp[1]);
       pin+=(1+elements[i].length());
     }
     this.coefficients=coef;
@@ -151,7 +152,7 @@ public class Polynomial{
         j++;
       }
 		}
-    for(int n=0; n<maxLength; n++) if(newPoly[n]!=0)
+    for(int n=0; n<maxLength; n++) if(newPoly[n]!=0.0)
     {
       newPoly[returnLength]=newPoly[n];
       newExpo[returnLength]=n;
@@ -172,11 +173,14 @@ public class Polynomial{
     String out="";
     for(int i=0; i<this.coefficients.length; i++)
     {
-      out+=this.coefficients[i];
+      if(this.coefficients[i]>=0) out+="+";
+      DecimalFormat df = new DecimalFormat("0.#");
+      out += df.format(this.coefficients[i]);
       if(this.exponents[i]!=0) out+="x";
       out+=this.exponents[i];
     }
-    PrintStream ps = new PrintStream("./output.txt");
+    PrintStream ps = new PrintStream("./"+fileName);
+    out = out.substring(1,out.length());
     ps.println(out);
     return;
   }

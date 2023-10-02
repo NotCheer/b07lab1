@@ -19,8 +19,13 @@ public class Driver {
 			System.out.println("1 is not a root of s");
 	
     File file = new File("./input.txt");
-    System.out.println(file.exists());
+    System.out.println("file existence   "+file.exists());
+    System.out.println("read p3 from file");
     Polynomial p3 = new Polynomial(file);
+    System.out.println("p3(2)="+p3.evaluate(2));
+    p3=p3.multiply(p2);
+    System.out.println("save p3*p2 to file");
+    p3.saveToFile("output.txt");
   }
 }
 
